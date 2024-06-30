@@ -75,9 +75,36 @@ menu = [
         ]
     },
     {
+        "label": "修改torch版本",
+        "description": "change torch version",
+        "sub": [
+            {
+                "label": "torch2.1.2",
+                "description": "change torch version to 2.1.2",
+                "cmd": "pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121"
+            },
+        ]
+    },
+    {
+        "label": "conda操作",
+        "description": "conda",
+        "sub": [
+            {
+                "label": "初始化ComfyUI环境(python310)",
+                "description": "init comfyui env",
+                "cmd": "conda create -n ComfyUI python=3.10"
+            },
+            {
+                "label": "激活ComfyUI环境",
+                "description": "activate comfyui env",
+                "cmd": "conda activate ComfyUI"
+            },
+        ]
+    },
+    {
         "label": "更新版本",
         "description": "更新版本",
-        "cmd": "git -C /root/autodl-scripts pull"
+        "cmd": f"git -C /root/autodl-scripts pull"
     },
     {
         "label": "使用代理",
@@ -88,10 +115,21 @@ menu = [
         "label": "停止代理",
         "description": "停止代理",
         "cmd": "export http_proxy=;export https_proxy="
+    },
+    {
+        "label": "调试",
+        "description": "调试",
+        "sub": [
+            {
+                "label": "查看所有环境变量",
+                "description": "env",
+                "cmd": "export"
+            },
+        ]
     }
 ]
 
-
+import subprocess
 if __name__ == '__main__':
 
     try:
@@ -139,7 +177,11 @@ if __name__ == '__main__':
                 if item['label'] == selected_label:
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
-                        os.system(item['cmd'])
+                        p = subprocess.Popen(
+                            item['cmd'], shell=True, env=os.environ)
+                        p.wait()
+                        # sync sub process env
+
                     if 'sub' in item:
                         current_labal = selected_label
                     break
