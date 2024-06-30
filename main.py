@@ -103,10 +103,11 @@ menu = [
             {
                 "label": "同步清华源",
                 "description": "sync tsinghua source",
-                "cmd": """conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main;
-                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free;
-                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r;
-                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro;
+                "cmd": """
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro
                 conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
                 """
             }
@@ -155,6 +156,7 @@ import subprocess
 
 import os
 import argparse
+import tempfile
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--mode', type=str, default='main',
@@ -209,6 +211,10 @@ if __name__ == '__main__':
             current_labal, message=item["description"], choices=choices,)
         answers1 = inquirer.prompt([questions])
         selected_label = answers1[current_labal]
+
+        tempdir = tempfile.mkdtemp()
+        tempbashfile = os.path.join(tempdir, 'tmp.sh')
+
         if selected_label == '返回':
             current_labal = 'main'
         else:
@@ -216,14 +222,14 @@ if __name__ == '__main__':
                 if item['label'] == selected_label:
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
-                        with open('./tmp.sh', 'w') as f:
+                        with open(tempbashfile, 'w') as f:
                             f.write(item['cmd'])
-                        os.chmod('./tmp.sh', 0o777)
+                        os.chmod(tempbashfile, 0o777)
 
                         os.system(
-                            f"/bin/bash -c './tmp.sh ; {sys.executable} {__file__} --mode write-env'")
+                            f"/bin/bash -c '{tempbashfile} ; {sys.executable} {__file__} --mode write-env'")
                         sync_env()
-                        os.remove('./tmp.sh')
+                        os.remove(tempbashfile)
 
                     if 'sub' in item:
                         current_labal = selected_label
