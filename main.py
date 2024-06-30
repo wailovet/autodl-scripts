@@ -131,10 +131,13 @@ menu = [
 ]
 
 def sync_env():
-    with open('./last_executed_env.json', 'r') as f:
-        envs_dict = json.loads(f.read())
-        for key, value in envs_dict.items():
-            os.environ[key] = value
+    if os.path.exists('./last_executed_env.json'):
+        with open('./last_executed_env.json', 'r') as f:
+            envs_dict = json.loads(f.read())
+            for key, value in envs_dict.items():
+                os.environ[key] = value
+        
+        os.remove('./last_executed_env.json')
 
 import os
 import argparse
