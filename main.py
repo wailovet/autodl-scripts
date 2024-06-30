@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import sys
 import os
 from typing import List
@@ -129,9 +130,30 @@ menu = [
     }
 ]
 
-import subprocess
-if __name__ == '__main__':
+def sync_env():
+    with open('./last_executed_env.json', 'r') as f:
+        envs_dict = json.loads(f.read())
+        for key, value in envs_dict.items():
+            os.environ[key] = value
 
+import os
+import argparse
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--mode', type=str, default='main',
+                        help='mode')
+    args = parser.parse_args()
+
+    mode = args.mode
+
+    if mode == "write-env":
+        with open('./last_executed_env.json', 'w') as f:
+            envs_dict = {}
+            for key, value in os.environ.items():
+                envs_dict[key] = value
+
+            f.write(json.dumps(envs_dict, indent=4, ensure_ascii=False))
+        sys.exit(0)
     try:
         import inquirer
     except ImportError:
@@ -177,10 +199,10 @@ if __name__ == '__main__':
                 if item['label'] == selected_label:
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
-                        p = subprocess.Popen(
-                            item['cmd'], shell=True, env=os.environ)
-                        p.wait()
-                        # sync sub process env
+                        os.system(
+                            f"{item['cmd']} ; {sys.executable} main.py -m write-env")
+
+                        sync_env()
 
                     if 'sub' in item:
                         current_labal = selected_label
