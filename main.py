@@ -60,7 +60,7 @@ if __name__ == '__main__':
                         {
                             "label": "安装翻译节点",
                             "description": "install AIGODLIKE-ComfyUI-Translation",
-                            "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes"
+                            "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
                         },
                     ] + custom_node_all
                 },
@@ -109,7 +109,8 @@ if __name__ == '__main__':
         for item in current_menu:
             choices.append(item['label'])
         if current_labal != 'main':
-            choices.append('返回')
+            # 增加返回选项在开头
+            choices.insert(0, '返回')
         questions = inquirer.List(
             current_labal, message=item["description"], choices=choices,)
         answers1 = inquirer.prompt([questions])
