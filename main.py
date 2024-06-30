@@ -2,6 +2,114 @@
 import sys
 import os
 
+
+custom_node_list_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json"
+
+
+def get_custom_node_list():
+    import requests
+    response = requests.get(custom_node_list_url)
+    if response.status_code == 200:
+        return response.json().get('custom_nodes', [])
+    return []
+
+
+custom_node_list = get_custom_node_list()
+custom_node_all = []
+for item in custom_node_list:
+    all_url = item['reference']
+    dir_name = all_url.split('/')[-1].replace('.git', '')
+    custom_node_all.append({
+        "label": item['title'],
+        "description": item['description'],
+        "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
+    })
+
+
+menu = [
+    {
+        "label": "ComfyUI",
+        "description": "ComfyUI",
+        "sub": [
+            {
+                "label": "启动ComfyUI",
+                "description": "start up comfyui",
+                "cmd": "python /root/ComfyUI/main.py"
+            },
+            {
+                "label": "安装ComfyUI",
+                "description": "install comfyui",
+                "cmd": "git clone https://github.com/comfyanonymous/ComfyUI /root/ComfyUI"
+            },
+            {
+                "label": "安装ComfyUI(Manager|Translation)",
+                "description": "install comfyui",
+                "cmd": '''git clone https://github.com/comfyanonymous/ComfyUI /root/ComfyUI;
+                    git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes;
+                        git clone https://github.com/ltdrdata/ComfyUI-Manager /root/ComfyUI/custom_nodes'''
+            },
+            {
+                "label": "安装自定义节点",
+                "description": "install custom nodes",
+                "sub": [
+                    {
+                        "label": "安装翻译节点",
+                        "description": "install AIGODLIKE-ComfyUI-Translation",
+                        "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
+                    },
+                ]
+            },
+            {
+                "label": "更新ComfyUI",
+                "description": "update comfyui",
+                "cmd": "git -C /root/ComfyUI pull"
+            },
+        ]
+    },
+    {
+        "label": "更新版本",
+        "description": "更新版本",
+        "cmd": "git -C /root/autodl-scripts pull"
+    },
+    {
+        "label": "使用代理",
+        "description": "在autodl中使用代理",
+        "cmd": "source /etc/network_turbo"
+    },
+    {
+        "label": "停止代理",
+        "description": "停止代理",
+        "cmd": "export http_proxy=;export https_proxy="
+    }
+]
+
+
+def update_custom_node():
+    global menu
+    custom_node_list = get_custom_node_list()
+    custom_node_all = []
+    for item in custom_node_list:
+        all_url = item['reference']
+        dir_name = all_url.split('/')[-1].replace('.git', '')
+        custom_node_all.append({
+            "label": item['title'],
+            "description": item['description'],
+            "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
+        })
+    for item in menu:
+        if item['label'] == 'ComfyUI':
+            for sub_item in item['sub']:
+                if sub_item['label'] == '安装自定义节点':
+                    sub_item['sub'] = [
+                        {
+                            "label": "安装翻译节点",
+                            "description": "install AIGODLIKE-ComfyUI-Translation",
+                            "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
+                        },
+                    ] + custom_node_all
+                    break
+
+
 if __name__ == '__main__':
 
     try:
@@ -10,83 +118,6 @@ if __name__ == '__main__':
         os.system('pip install inquirer')
         import inquirer
 
-    custom_node_list_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json"
-
-    def get_custom_node_list():
-        import requests
-        response = requests.get(custom_node_list_url)
-        if response.status_code == 200:
-            return response.json().get('custom_nodes', [])
-        return []
-
-    custom_node_list = get_custom_node_list()
-    custom_node_all = []
-    for item in custom_node_list:
-        all_url = item['reference']
-
-        dir_name = all_url.split('/')[-1].replace('.git', '')
-        custom_node_all.append({
-            "label": item['title'],
-            "description": item['description'],
-            "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
-        })
-
-    menu = [
-        {
-            "label": "ComfyUI",
-            "description": "ComfyUI",
-            "sub": [
-                {
-                    "label": "启动ComfyUI",
-                    "description": "start up comfyui",
-                    "cmd": "python /root/ComfyUI/main.py"
-                },
-                {
-                    "label": "安装ComfyUI",
-                    "description": "install comfyui",
-                    "cmd": "git clone https://github.com/comfyanonymous/ComfyUI /root/ComfyUI"
-                },
-                {
-                    "label": "安装ComfyUI(Manager|Translation)",
-                    "description": "install comfyui",
-                    "cmd": '''git clone https://github.com/comfyanonymous/ComfyUI /root/ComfyUI;
-                        git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes;
-                            git clone https://github.com/ltdrdata/ComfyUI-Manager /root/ComfyUI/custom_nodes'''
-                },
-                {
-                    "label": "安装自定义节点",
-                    "description": "install custom nodes",
-                    "sub": [
-                        {
-                            "label": "安装翻译节点",
-                            "description": "install AIGODLIKE-ComfyUI-Translation",
-                            "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
-                        },
-                    ] + custom_node_all
-                },
-                {
-                    "label": "更新ComfyUI",
-                    "description": "update comfyui",
-                    "cmd": "git -C /root/ComfyUI pull"
-                },
-            ]
-        },
-        {
-            "label": "更新版本",
-            "description": "更新版本",
-            "cmd": "git -C /root/autodl-scripts pull"
-        },
-        {
-            "label": "使用代理",
-            "description": "在autodl中使用代理",
-            "cmd": "source /etc/network_turbo"
-        },
-        {
-            "label": "停止代理",
-            "description": "停止代理",
-            "cmd": "export http_proxy=;export https_proxy="
-        }
-    ]
     current_labal = 'main'
 
     def get_current_menu(_menu):
