@@ -32,6 +32,11 @@ def more_custom_nodes():
 
 menu = [
     {
+        "label": "激活ComfyUI环境",
+        "description": "activate comfyui env",
+        "cmd": "eval \"$(conda shell.bash hook)\" && conda activate ComfyUI"
+    },
+    {
         "label": "ComfyUI",
         "description": "ComfyUI",
         "sub": [
@@ -96,11 +101,6 @@ menu = [
                 "cmd": "conda create -n ComfyUI python=3.10"
             },
             {
-                "label": "激活ComfyUI环境",
-                "description": "activate comfyui env",
-                "cmd": "eval \"$(conda shell.bash hook)\" && conda activate ComfyUI"
-            },
-            {
                 "label": "同步清华源",
                 "description": "sync tsinghua source",
                 "cmd": """
@@ -137,6 +137,11 @@ menu = [
                 "description": "env",
                 "cmd": "export"
             },
+            {
+                "label": "查看python版本",
+                "description": "python version",
+                "cmd": "python --version"
+            }
         ]
     }
 ]
@@ -223,7 +228,8 @@ if __name__ == '__main__':
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
                         with open(tempbashfile, 'w') as f:
-                            f.write(item['cmd']+f"\n{sys.executable} {__file__} --mode write-env")
+                            f.write(
+                                item['cmd'] + f"\n{sys.executable} {__file__} --mode write-env")
                         os.chmod(tempbashfile, 0o777)
 
                         os.system(
