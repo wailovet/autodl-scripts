@@ -98,7 +98,7 @@ menu = [
             {
                 "label": "激活ComfyUI环境",
                 "description": "activate comfyui env",
-                "cmd": "conda activate ComfyUI"
+                "cmd": "eval \"$(conda shell.bash hook)\" && conda activate ComfyUI"
             },
             {
                 "label": "同步清华源",
