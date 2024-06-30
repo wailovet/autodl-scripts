@@ -100,6 +100,16 @@ menu = [
                 "description": "activate comfyui env",
                 "cmd": "conda activate ComfyUI"
             },
+            {
+                "label": "同步清华源",
+                "description": "sync tsinghua source",
+                "cmd": """conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main;
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free;
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r;
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro;
+                conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+                """
+            }
         ]
     },
     {
@@ -130,14 +140,16 @@ menu = [
     }
 ]
 
+
 def sync_env():
     if os.path.exists('./last_executed_env.json'):
         with open('./last_executed_env.json', 'r') as f:
             envs_dict = json.loads(f.read())
             for key, value in envs_dict.items():
                 os.environ[key] = value
-        
+
         os.remove('./last_executed_env.json')
+
 
 import subprocess
 
@@ -206,7 +218,7 @@ if __name__ == '__main__':
                         print(f"执行命令: {item['cmd']}")
                         os.system(
                             f"/bin/bash -c '{item['cmd']} ; {sys.executable} {__file__} --mode write-env'")
-                        
+
                         sync_env()
                     if 'sub' in item:
                         current_labal = selected_label
