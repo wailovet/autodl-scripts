@@ -74,6 +74,11 @@ menu = [
                         git clone https://github.com/ltdrdata/ComfyUI-Manager /root/ComfyUI/custom_nodes'''
             },
             {
+                "label": "更新依赖requirements.txt",
+                "description": "update requirements.txt",
+                "cmd": "pip install -r /root/ComfyUI/requirements.txt"
+            }
+            {
                 "label": "更新ComfyUI",
                 "description": "update comfyui",
                 "cmd": "git -C /root/ComfyUI pull"
