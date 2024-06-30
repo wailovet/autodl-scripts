@@ -74,7 +74,7 @@ if __name__ == '__main__':
         {
             "label": "更新版本",
             "description": "更新版本",
-            "cmd": "git -c /root/autodl-scripts pull"
+            "cmd": "git -C /root/autodl-scripts pull"
         },
         {
             "label": "使用代理",
