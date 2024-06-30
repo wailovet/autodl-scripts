@@ -223,11 +223,11 @@ if __name__ == '__main__':
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
                         with open(tempbashfile, 'w') as f:
-                            f.write(item['cmd'])
+                            f.write(item['cmd']+f"\n{sys.executable} {__file__} --mode write-env")
                         os.chmod(tempbashfile, 0o777)
 
                         os.system(
-                            f"/bin/bash -c '{tempbashfile} ;\n {sys.executable} {__file__} --mode write-env'")
+                            f"/bin/bash -c '{tempbashfile}'")
                         sync_env()
                         os.remove(tempbashfile)
 
