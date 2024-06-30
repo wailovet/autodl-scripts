@@ -227,7 +227,7 @@ if __name__ == '__main__':
                         os.chmod(tempbashfile, 0o777)
 
                         os.system(
-                            f"/bin/bash -c '{tempbashfile} ; {sys.executable} {__file__} --mode write-env'")
+                            f"/bin/bash -c '{tempbashfile} ;\n {sys.executable} {__file__} --mode write-env'")
                         sync_env()
                         os.remove(tempbashfile)
 
