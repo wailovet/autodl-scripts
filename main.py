@@ -130,14 +130,18 @@ menu = [
     }
 ]
 
+
 def sync_env():
     if os.path.exists('./last_executed_env.json'):
         with open('./last_executed_env.json', 'r') as f:
             envs_dict = json.loads(f.read())
             for key, value in envs_dict.items():
                 os.environ[key] = value
-        
-        os.remove('./last_executed_env.json')
+
+        # os.remove('./last_executed_env.json')
+
+
+import subprocess
 
 import os
 import argparse
@@ -202,11 +206,10 @@ if __name__ == '__main__':
                 if item['label'] == selected_label:
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
-                        os.system(
-                            f"{item['cmd']} ; {sys.executable} {__file__} --mode write-env")
 
+                        subprocess.run(
+                            f"{item['cmd']} ; {sys.executable} {__file__} --mode write-env", shell=True)
                         sync_env()
-
                     if 'sub' in item:
                         current_labal = selected_label
                     break
