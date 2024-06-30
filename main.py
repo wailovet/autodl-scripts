@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+from typing import List
 
 
 custom_node_list_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json"
@@ -14,16 +15,18 @@ def get_custom_node_list():
     return []
 
 
-custom_node_list = get_custom_node_list()
-custom_node_all = []
-for item in custom_node_list:
-    all_url = item['reference']
-    dir_name = all_url.split('/')[-1].replace('.git', '')
-    custom_node_all.append({
-        "label": item['title'],
-        "description": item['description'],
-        "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
-    })
+def more_custom_nodes():
+    custom_node_list = get_custom_node_list()
+    custom_node_all = []
+    for item in custom_node_list:
+        all_url = item['reference']
+        dir_name = all_url.split('/')[-1].replace('.git', '')
+        custom_node_all.append({
+            "label": item['title'],
+            "description": item['description'],
+            "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
+        })
+    return custom_node_all
 
 
 menu = [
@@ -31,6 +34,22 @@ menu = [
         "label": "ComfyUI",
         "description": "ComfyUI",
         "sub": [
+            {
+                "label": "安装自定义节点",
+                "description": "install custom nodes",
+                "sub": [
+                    {
+                        "label": "安装翻译节点",
+                        "description": "install AIGODLIKE-ComfyUI-Translation",
+                        "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
+                    },
+                    {
+                        "label": "更多自定义节点",
+                        "description": "install custom nodes",
+                        "sub": more_custom_nodes
+                    }
+                ]
+            },
             {
                 "label": "启动ComfyUI",
                 "description": "start up comfyui",
@@ -47,17 +66,6 @@ menu = [
                 "cmd": '''git clone https://github.com/comfyanonymous/ComfyUI /root/ComfyUI;
                     git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes;
                         git clone https://github.com/ltdrdata/ComfyUI-Manager /root/ComfyUI/custom_nodes'''
-            },
-            {
-                "label": "安装自定义节点",
-                "description": "install custom nodes",
-                "sub": [
-                    {
-                        "label": "安装翻译节点",
-                        "description": "install AIGODLIKE-ComfyUI-Translation",
-                        "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
-                    },
-                ]
             },
             {
                 "label": "更新ComfyUI",
@@ -82,32 +90,6 @@ menu = [
         "cmd": "export http_proxy=;export https_proxy="
     }
 ]
-
-
-def update_custom_node():
-    global menu
-    custom_node_list = get_custom_node_list()
-    custom_node_all = []
-    for item in custom_node_list:
-        all_url = item['reference']
-        dir_name = all_url.split('/')[-1].replace('.git', '')
-        custom_node_all.append({
-            "label": item['title'],
-            "description": item['description'],
-            "cmd": f"git clone {item['reference']} /root/ComfyUI/custom_nodes/{dir_name}"
-        })
-    for item in menu:
-        if item['label'] == 'ComfyUI':
-            for sub_item in item['sub']:
-                if sub_item['label'] == '安装自定义节点':
-                    sub_item['sub'] = [
-                        {
-                            "label": "安装翻译节点",
-                            "description": "install AIGODLIKE-ComfyUI-Translation",
-                            "cmd": "git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation /root/ComfyUI/custom_nodes/AIGODLIKE-ComfyUI-Translation"
-                        },
-                    ] + custom_node_all
-                    break
 
 
 if __name__ == '__main__':
@@ -137,6 +119,10 @@ if __name__ == '__main__':
     while True:
         choices = []
         current_menu = get_current_menu(menu)
+
+        # 判断是否是函数，如果是函数则执行
+        if callable(current_menu):
+            current_menu = current_menu()
         for item in current_menu:
             choices.append(item['label'])
         if current_labal != 'main':
