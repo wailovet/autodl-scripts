@@ -216,10 +216,15 @@ if __name__ == '__main__':
                 if item['label'] == selected_label:
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
-                        os.system(
-                            f"/bin/bash -c '{item['cmd']} ; {sys.executable} {__file__} --mode write-env'")
+                        with open('./tmp.sh', 'w') as f:
+                            f.write(item['cmd'])
+                        os.chmod('./tmp.sh', 0o777)
 
+                        os.system(
+                            f"/bin/bash -c './tmp.sh ; {sys.executable} {__file__} --mode write-env'")
                         sync_env()
+                        os.remove('./tmp.sh')
+
                     if 'sub' in item:
                         current_labal = selected_label
                     break
