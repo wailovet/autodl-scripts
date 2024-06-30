@@ -203,7 +203,7 @@ if __name__ == '__main__':
                     if 'cmd' in item:
                         print(f"执行命令: {item['cmd']}")
                         os.system(
-                            f"{item['cmd']} ; {sys.executable} main.py -m write-env")
+                            f"{item['cmd']} ; {sys.executable} {__file__} --mode write-env")
 
                         sync_env()
 
